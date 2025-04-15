@@ -25,5 +25,5 @@ function generateNFT() {
 
 function copyAddress() {
   navigator.clipboard.writeText(userAddress);
-  alert("Wallet address copied! Head to Remix and mint your certificate.");
+  alert("Wallet address copied! Use it to mint your certificate on Remix.");
 }
