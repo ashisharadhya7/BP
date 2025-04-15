@@ -3,29 +3,148 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Course Completion NFT</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>NFT Certificate Minting</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 2rem;
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    input, button {
+      padding: 0.7rem;
+      font-size: 1rem;
+      margin: 1rem 0;
+      width: 80%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #0070f3;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #0051a8;
+    }
+    .hidden {
+      display: none;
+    }
+    .certificate {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #e6ffe6;
+      border: 1px solid #8cff8c;
+      border-radius: 8px;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Course Completion NFT</h1>
-    <div id="step1">
-      <input id="walletInput" type="text" placeholder="Enter your Ethereum address" />
-      <button onclick="startCourse()">Start Course</button>
-    </div>
-    <div id="step2" class="hidden">
-      <p>Congratulations on completing the course!</p>
-      <button onclick="showCompletion()">Generate NFT Certificate</button>
-    </div>
-    <div id="step3" class="hidden">
-      <p>Your NFT certificate is ready to be minted!</p>
-      <button onclick="generateNFT()">Mint NFT</button>
-    </div>
-    <div id="certificate" class="hidden">
-      <p>Your NFT Certificate for <span id="walletDisplay"></span> is ready.</p>
-      <button onclick="copyAddress()">Copy Wallet Address</button>
-    </div>
+  <div class="container" id="step1">
+    <h2>Enter your Ethereum Address</h2>
+    <input type="text" id="walletInput" placeholder="0x...">
+    <button onclick="startCourse()">Start Course</button>
   </div>
-  <script src="script.js"></script>
+
+  <div class="container hidden" id="step2">
+    <h2>Course In Progress</h2>
+    <p>Click "Complete" once you've finished the course.</p>
+    <button onclick="showCompletion()">Complete</button>
+  </div>
+
+  <div class="container hidden" id="step3">
+    <h2>Course Completed</h2>
+    <p>Ready to mint your NFT Certificate?</p>
+    <button onclick="mintCertificate()">Mint NFT Certificate</button>
+  </div>
+
+  <div class="container hidden" id="certificate">
+    <h2>Certificate Issued</h2>
+    <p>Wallet Address: <span id="walletDisplay"></span></p>
+    <button onclick="copyAddress()">Copy Wallet Address</button>
+  </div>
+
+  <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+  <script>
+    let userAddress = ""; // Holds the Ethereum address entered by the user
+
+    // Smart contract details
+    const contractAddress = "YOUR_CONTRACT_ADDRESS"; // Replace with your deployed contract address
+    const contractABI = [
+      // Replace with your contract ABI
+    ];
+
+    // Start the course by validating the Ethereum address
+    function startCourse() {
+      const input = document.getElementById("walletInput").value.trim();
+
+      // Validate Ethereum address
+      if (!/^0x[a-fA-F0-9]{40}$/.test(input)) {
+        alert("Please enter a valid Ethereum address.");
+        return;
+      }
+
+      userAddress = input;
+
+      // Show the next step in the UI
+      document.getElementById("step1").classList.add("hidden");
+      document.getElementById("step2").classList.remove("hidden");
+    }
+
+    // Show course completion step
+    function showCompletion() {
+      document.getElementById("step2").classList.add("hidden");
+      document.getElementById("step3").classList.remove("hidden");
+    }
+
+    // Mint the NFT certificate
+    async function mintCertificate() {
+      if (!window.ethereum) {
+        alert("Please install MetaMask to proceed!");
+        return;
+      }
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(contractAddress, contractABI, signer);
+
+      try {
+        // Call the smart contract to mint the NFT
+        const tx = await contract.completeCourse(userAddress);
+        await tx.wait();
+
+        // Update the UI to show the certificate
+        generateNFT();
+        alert("NFT Certificate minted successfully!");
+      } catch (err) {
+        console.error("Error minting certificate:", err);
+        alert("Failed to mint NFT. Please try again.");
+      }
+    }
+
+    // Generate the NFT certificate UI
+    function generateNFT() {
+      document.getElementById("step3").classList.add("hidden");
+      document.getElementById("certificate").classList.remove("hidden");
+      document.getElementById("walletDisplay").innerText = userAddress;
+    }
+
+    // Copy wallet address to clipboard
+    function copyAddress() {
+      navigator.clipboard.writeText(userAddress);
+      alert("Wallet address copied! Use it to mint your certificate on Remix.");
+    }
+  </script>
 </body>
 </html>
