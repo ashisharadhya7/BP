@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Course Completion DApp (Simulated)</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>📚 Blockchain 101: Intro Course</h1>
+
+    <!-- Step 1: Enter Wallet -->
+    <div id="step1">
+      <p>Enter your wallet address to begin:</p>
+      <input type="text" id="walletInput" placeholder="0xYourAddressHere" />
+      <button onclick="startCourse()">Enter Course</button>
+    </div>
+
+    <!-- Step 2: Watch video -->
+    <div id="step2" class="hidden">
+      <h2>🎥 Course Video</h2>
+      <iframe src="https://www.youtube.com/embed/8oH0lO73XuA" allowfullscreen></iframe>
+      <button onclick="showCompletion()">Mark as Watched</button>
+    </div>
+
+    <!-- Step 3: Complete course -->
+    <div id="step3" class="hidden">
+      <h2>✅ Complete the Course</h2>
+      <p>Click below to complete and generate your certificate.</p>
+      <button onclick="generateNFT()">Generate Certificate</button>
+    </div>
+
+    <!-- Step 4: Certificate -->
+    <div id="certificate" class="certificate hidden">
+      <h3>🎉 Course Completed!</h3>
+      <p>Wallet: <span id="walletDisplay"></span></p>
+      <p>You can now mint your NFT certificate in <strong>Remix</strong> using this address.</p>
+      <button onclick="copyAddress()">📋 Copy Address</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Completion & NFT Reward</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 2rem;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    button {
+      padding: 0.7rem 1.2rem;
+      margin: 0.5rem 0;
+      font-size: 1rem;
+      border: none;
+      border-radius: 0.5rem;
+      background: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    input {
+      width: 100%;
+      padding: 0.7rem;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Welcome to the Web3 Course</h2>
+    <input type="text" id="name" placeholder="Enter your name" />
+
+    <button onclick="startCourse()">🎓 Start Course</button>
+
+    <div id="courseSection" class="hidden">
+      <h3>Watch this video:</h3>
+      <video width="100%" controls>
+        <source src="course-video.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      <button onclick="completeCourse()">✅ Complete Course</button>
+    </div>
+
+    <div id="completionSection" class="hidden">
+      <p>Congratulations! You completed the course.</p>
+      <button id="connectWallet">🔗 Connect Wallet</button>
+      <button id="mintNFT" disabled>🪙 Mint NFT</button>
+      <button onclick="showRemixCode()">📋 Copy Remix Mint Code</button>
+      <textarea id="remixCode" class="hidden" rows="4" style="width: 100%;"></textarea>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <script>
+    let signer;
+    let contract;
+
+    const contractAddress = "YOUR_CONTRACT_ADDRESS";
+    const contractABI = [
+      // Replace with the actual ABI from Remix after deploying your contract
+      {
+        "inputs": [
+          { "internalType": "string", "name": "name", "type": "string" }
+        ],
+        "name": "mintCertificate",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ];
+
+    function startCourse() {
+      const name = document.getElementById("name").value.trim();
+      if (!name) return alert("Please enter your name.");
+      localStorage.setItem("studentName", name);
+      document.getElementById("courseSection").classList.remove("hidden");
+    }
+
+    function completeCourse() {
+      document.getElementById("completionSection").classList.remove("hidden");
+    }
+
+    document.getElementById("connectWallet").onclick = async function () {
+      if (window.ethereum) {
+        try {
+          await ethereum.request({ method: "eth_requestAccounts" });
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          signer = provider.getSigner();
+          contract = new ethers.Contract(contractAddress, contractABI, signer);
+          document.getElementById("mintNFT").disabled = false;
+          alert("Wallet connected!");
+        } catch (err) {
+          alert("Connection failed: " + err.message);
+        }
+      } else {
+        alert("Please install MetaMask.");
+      }
+    };
+
+    document.getElementById("mintNFT").onclick = async function () {
+      const name = localStorage.getItem("studentName") || "Student";
+      if (!contract) return alert("Contract not ready");
+      try {
+        const tx = await contract.mintCertificate(name);
+        await tx.wait();
+        alert("🎉 NFT Minted!");
+      } catch (err) {
+        alert("Minting failed: " + err.message);
+      }
+    };
+
+    function showRemixCode() {
+      const name = localStorage.getItem("studentName") || "Student";
+      const code = `// Paste this into Remix\ncertificateContract.mintCertificate(\"${name}\");`;
+      const textArea = document.getElementById("remixCode");
+      textArea.value = code;
+      textArea.classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>
