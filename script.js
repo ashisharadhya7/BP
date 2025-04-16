@@ -1,10 +1,8 @@
 let userAddress = ""; // Holds the Ethereum address entered by the user
 
 // Smart contract details
-const contractAddress = "0xA437924171f235178806C1f081b4868C79987A79"; // Replace with your deployed contract address
+const contractAddress = "0xA437924171f235178806C1f081b4868C79987A79"; // Your deployed contract address
 const contractABI = [
-  // Replace with your contract ABI
-  [
 	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
@@ -456,7 +454,6 @@ const contractABI = [
 		"stateMutability": "view",
 		"type": "function"
 	}
-]
 ];
 
 function startCourse() {
