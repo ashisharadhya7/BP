@@ -1,7 +1,7 @@
 let userAddress = ""; // Holds the Ethereum address entered by the user
 
 // Smart contract details
-const contractAddress = "YOUR_CONTRACT_ADDRESS"; // Replace with your deployed contract address
+const contractAddress = "0xA437924171f235178806C1f081b4868C79987A79"; // Replace with your deployed contract address
 const contractABI = [
   // Replace with your contract ABI
 ];
